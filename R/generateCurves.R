@@ -1,12 +1,4 @@
-# Hello, world!
-#
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
-#
-# You can learn more about package authoring with RStudio at:
-#
-#   https://r-pkgs.org
-#
+
 # Some useful keyboard shortcuts for package authoring:
 #
 #   Install Package:           'Cmd + Shift + B'
@@ -18,9 +10,6 @@
 # Need to think about how to best incorporate this into the library and where
 #
 
-library(psych)
-library(ggplot2)
-
 clamp <- function(x) {
   return(pmin(1, pmax(0, x)))
 }
@@ -29,64 +18,6 @@ checkNames <- function(pars, names) {
   if(!all(names %in% names(pars))) {
     stop("Names of pars inputs do not match expected names for this engine")
   }
-}
-
-limiterSimpleGoal <- function(raw_output_perf, pars) {
-
-  # TODO: Rename rawoutput after export?
-
-  checkNames(pars = pars, names = c("goal"))
-
-  goal <- as.numeric(pars["goal"])
-
-  for(i in 1:length(raw_output_perf)) {
-
-    # If we reach goal, stop studying
-    if(raw_output_perf[i] >= goal) {
-
-      raw_output_perf[i:length(raw_output_perf)] <- raw_output_perf[i]
-
-      break
-    }
-  }
-
-  return(raw_output_perf)
-
-}
-
-engineLinear <- function(t, pars) {
-
-  # TODO: STILL NEED TO ADD SHIFT
-  # TODO: Need to add bounds
-
-  checkNames(pars = pars, names = c("slope", "floor", "shift"))
-
-  slope <- as.numeric(pars["slope"])
-  floor <- as.numeric(pars["floor"])
-  shift <- as.numeric(pars["shift"])
-
-  output_perf <- t * slope + floor
-
-  # Clamp between 0 and 1
-  output_perf <- clamp(output_perf)
-
-  return(output_perf)
-}
-
-engineLogistic <- function(time_seq, pars) {
-
-  checkNames(pars = pars, names = c("slope", "floor", "shift"))
-
-  slope <- as.numeric(pars["slope"])
-  floor <- as.numeric(pars["floor"])
-  shift <- as.numeric(pars["shift"])
-
-  output_perf <- psych::logistic(x = time_seq,
-                                 a = slope,
-                                 c = floor,
-                                 d = shift)
-
-  return(output_perf)
 }
 
 setEngine <- function(engine_type) {
@@ -197,11 +128,4 @@ generateCurve <- function(engine_type, engine_pars,
 
   return(output_obj)
 
-}
-
-test <- function() {
-  x <- generateCurve(engine_type = "logistic", engine_pars = list(slope = 1, floor = 0, shift = 0),
-                     limiter_type = "simplegoal", limiter_pars = list(goal = 0.85),
-                     time_end = 10)
-  print(x)
 }
