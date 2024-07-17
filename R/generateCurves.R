@@ -21,24 +21,34 @@ checkNames <- function(pars, names) {
 }
 
 setEngine <- function(engine_type) {
-  if(engine_type == "logistic") {
-    return(engineLogistic)
-  }
-  if(engine_type == "linear") {
-    return(engineLinear)
-  }
+  # Combine the base string and the append string
+  combined_string <- paste0("engine", engine_type)
 
-  # Throw error if we can't set engine
-  stop(paste("No engine of this name <", engine_type, "> found."))
+  # Check if the combined string is the name of a function
+  if (exists(combined_string, mode = "function")) {
+    # Retrieve and return the function itself
+    return(get(combined_string))
+
+  } else {
+    # Throw error if we can't set engine
+    stop(paste("No engine of this name <", engine_type, "> found."))
+  }
 }
 
 setLimiter <- function(limiter_type) {
-  if(limiter_type == "simplegoal") {
-    return(limiterSimpleGoal)
+  # Combine the base string and the append string
+  combined_string <- paste0("limiter", limiter_type)
+
+  # Check if the combined string is the name of a function
+  if (exists(combined_string, mode = "function")) {
+    # Retrieve and return the function itself
+    return(get(combined_string))
+
+  } else {
+    # Throw error if we can't set limiter
+    stop(paste("No limiter of this name <", limiter_type, "> found."))
   }
 
-  # Throw error if we can't set engine
-  stop(paste("No limiter of this name <", limiter_type, "> found."))
 }
 
 print.learningcurve <- function(x, ...) {
@@ -103,7 +113,7 @@ generateCurve <- function(engine_type, engine_pars,
   }
 
   # Apply limiter
-  if(!is.na(limiter)) {
+  if(exists("limiter") && is.function(limiter)) {
     limited_output_perf <- limiter(raw_output_perf, limiter_pars)
   } else {
     limited_output_perf <- raw_output_perf
